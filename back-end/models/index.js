@@ -1,71 +1,79 @@
+require('dotenv').config();
 const Sequelize = require('sequelize');
-const sequelize = new Sequelize('ecommerce_db', 'username', 'password', {
-    host: 'localhost',
+
+const sequelize = new Sequelize(
+    process.env.DB_NAME,
+    process.env.DB_USER,
+    process.env.DB_PASSWORD,
+    {
+    host: process.env.DB_HOST,
     dialect: 'mysql',
 });
 
 // Import models
-const userModel = requrire('./user');
-const roleModel = require('./role');
-const productModel = require('./product');
-const categoryModel = require('./category');
-const brandModel = require('./brand');
-const membershipModel = require('./membership');
-const cartModel = require('./cart');
-const cartItemModel = require('./cartItem');
-const orderModel = require('./order');
-const orderItemModel = require('./orderItem');
+const userModel = require('./User');
+const roleModel = require('./Role');
+const productModel = require('./Product');
+const categoryModel = require('./Category');
+const brandModel = require('./Brand');
+const membershipModel = require('./Membership');
+const cartModel = require('./Cart');
+const cartItemModel = require('./CartItem');
+const orderModel = require('./Order');
+const orderItemModel = require('./OrderItem');
 
 // Initialize models
-const user = userModel(sequelize);
-const role = roleModel(sequelize);
-const product = productModel(sequelize);
-const category = categoryModel(sequelize);
-const brand = brandModel(sequelize);
-const membership = membershipModel(sequelize);
-const cart = cartModel(sequelize);
-const cartItem = cartItemModel(sequelize);
-const order = orderModel(sequelize);
-const orderItem = orderItemModel(sequelize);
+const User = userModel(sequelize);
+const Role = roleModel(sequelize);
+const Product = productModel(sequelize);
+const Category = categoryModel(sequelize);
+const Brand = brandModel(sequelize);
+const Membership = membershipModel(sequelize);
+const Cart = cartModel(sequelize);
+const CartItem = cartItemModel(sequelize);
+const Order = orderModel(sequelize);
+const OrderItem = orderItemModel(sequelize);
 
 // Define relationships
-role.hasMany(user, {foreignKey: 'roleId'});
-user.belongsTo(role, { foreignKey: 'roleId'});
+Role.hasMany(User, { foreignKey: 'roleId' });
+User.belongsTo(Role, { foreignKey: 'roleId' });
 
-category.hasMany(product, { foreignKey: 'categoryId'});
-product.belongsTo(category, { foreignKey: 'categoryId'});
+Category.hasMany(Product, { foreignKey: 'categoryId' });
+Product.belongsTo(Category, { foreignKey: 'categoryId' });
 
-brand.hasMany(product, { foreignKey: 'brandId'});
-product.belongsTo(brand, { foreignKey: 'brandId'});
+Brand.hasMany(Product, { foreignKey: 'brandId' });
+Product.belongsTo(Brand, { foreignKey: 'brandId' });
 
-user.hasOne(cart, { foreignKey: 'userId'});
-cart.belongsTo(user, { foreignKey: 'userId'});
+User.hasOne(Cart, { foreignKey: 'userId' });
+Cart.belongsTo(User, { foreignKey: 'userId' });
 
-cart.hasMany(cartItem, { foreignKey: 'cartId'});
-cartItem.belongsTo(cart, { foreignKey: 'cartId'});
+Cart.hasMany(CartItem, { foreignKey: 'cartId' });
+CartItem.belongsTo(Cart, { foreignKey: 'cartId' });
 
-product.hasMany(cartItem, { foreignKey: 'productId'});
-cartItem.belongsTo(product, {foreignKey: 'productId'});
+CartItem.belongsTo(Product, { foreignKey: 'productId' });
+Product.hasMany(CartItem, { foreignKey: 'productId' });
 
-user.hasMany(order, { foreignKey: 'userId'});
-order.belongsTo(user, { foreignKey: 'userId'});
+User.hasMany(Order, { foreignKey: 'userId' });
+Order.belongsTo(User, { foreignKey: 'userId' });
 
-order.hasMany(orderItem, { foreignKey: 'orderId'});
-orderItem.belongsTo(order, { foreignKey: 'orderId'});
+Order.hasMany(OrderItem, { foreignKey: 'orderId' });
+OrderItem.belongsTo(Order, { foreignKey: 'orderId' });
 
-product.hasMany(orderItem, { foreignKey: 'productId'});
-orderItem.belongsTo(product, { foreignKey: 'productId'});
+OrderItem.belongsTo(Product, { foreignKey: 'productId' });
+Product.hasMany(OrderItem, { foreignKey: 'productId' });
 
+// Sync models to the database
 module.exports = {
     sequelize,
-    user,
-    role,
-    product,
-    category,
-    brand,
-    membership,
-    cart,
-    cartItem,
-    order,
-    orderItem
+    Sequelize,
+    User,
+    Role,
+    Product,
+    Category,
+    Brand,
+    Membership,
+    Cart,
+    CartItem,
+    Order,
+    OrderItem,
 };

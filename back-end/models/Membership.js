@@ -2,9 +2,12 @@ const { DataTypes } = require('sequelize');
 
 module.exports = (sequelize) => {
     return sequelize.define(
-        'Category',
+        'Membership',
         {
             name: DataTypes.STRING,
+            minQuantity: DataTypes.INTEGER,
+            maxQuantity: DataTypes.INTEGER,
+            discount: DataTypes.INTEGER,
         },
         { timestamps: false }
     );
