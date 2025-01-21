@@ -12,6 +12,7 @@ var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
 var initRouter = require('./routes/init');
 var authRouter = require('./routes/auth');
+var adminRouter = require('./routes/admin');
 
 // Create the Express app
 var app = express();
@@ -32,6 +33,7 @@ app.use('/', indexRouter);
 app.use('/users', usersRouter);
 app.use('/init', initRouter);
 app.use('/auth', authRouter);
+app.use('/admin', adminRouter);
 
 // Sync database
 db.sequelize

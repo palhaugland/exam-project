@@ -1,9 +1,14 @@
-var express = require('express');
-var router = express.Router();
+const express = require('express');
+const router = express.Router();
+const { authenticateToken } = require('../middleware/auth');
 
-/* GET users listing. */
-router.get('/', function(req, res, next) {
-  res.send('respond with a resource');
+// Example protected route
+router.get('/profile', authenticateToken, (req, res) => {
+    return res.status(200).json({
+        success: true,
+        message: 'Access granted.',
+        user: req.user, 
+    });
 });
 
 module.exports = router;
