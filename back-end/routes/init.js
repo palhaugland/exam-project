@@ -90,7 +90,7 @@ router.post('/', async (req, res) => {
                 defaults: {
                     description: product.description,
                     price: product.price,
-                    stock: product.quantity, // Use 'quantity' from API response
+                    stock: product.quantity,
                     categoryId: category.id,
                     brandId: brand.id,
                 },
