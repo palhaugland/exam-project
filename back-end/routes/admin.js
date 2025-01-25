@@ -1,6 +1,6 @@
 const express = require('express');
 const { authenticateToken, authorizeAdmin } = require('../middleware/auth');
-const { Product, Category, Brand } = require('../models');
+const { Product, Category, Brand, Order } = require('../models');
 const router = express.Router();
 
 // Products Management
@@ -118,6 +118,33 @@ router.delete('/brands/:id', authenticateToken, authorizeAdmin, async (req, res)
     } catch (error) {
         console.error('Error deleting brand:', error);
         res.status(500).json({ success: false, error: 'Failed to delete brand.' });
+    }
+});
+
+// Admin: Update order status
+router.put('/orders/:id', authenticateToken, authorizeAdmin, async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { status } = req.body;
+
+        // Validate status
+        const validStatuses = ['In Progress', 'Ordered', 'Completed'];
+        if (!validStatuses.includes(status)) {
+            return res.status(400).json({ success: false, error: 'Invalid status provided.' });
+        }
+
+        const order = await Order.findByPk(id);
+        if (!order) {
+            return res.status(404).json({ success: false, error: 'Order not found.' });
+        }
+
+        order.status = status;
+        await order.save();
+
+        return res.status(200).json({ success: true, message: 'Order status updated.', order });
+    } catch (error) {
+        console.error('Error updating order status:', error);
+        return res.status(500).json({ success: false, error: error.message });
     }
 });
 

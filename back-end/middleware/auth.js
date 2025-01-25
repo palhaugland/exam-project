@@ -22,9 +22,10 @@ const authenticateToken = (req, res, next) => {
 // Middleware to check for admin role
 const authorizeAdmin = (req, res, next) => {
     if (req.user.roleId !== 1) { 
+        console.log('Unauthorized access. User roleId:', req.user.roleId);
         return res.status(403).json({ success: false, error: 'Access denied. Admins only.' });
     }
-    next(); // Proceed if user is an admin
+    next();
 };
 
 module.exports = { authenticateToken, authorizeAdmin };
