@@ -3,6 +3,7 @@ var express = require('express');
 var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
+var setupSwagger = require('./swagger');
 
 // Import the database (with models and sequelize instance)
 var db = require('./models');
@@ -29,6 +30,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
+setupSwagger(app);
 
 // Route setup
 app.use('/', indexRouter);

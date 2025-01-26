@@ -91,7 +91,7 @@ router.post('/register', async (req, res) => {
             password: hashedPassword,
             address,
             phone,
-            roleId: 2, // Default role: User (as per Roles table setup in /init)
+            roleId: 2, // Default
         });
 
         return res.status(201).json({
