@@ -1,0 +1,38 @@
+{
+    "openapi": "3.0.0",
+    "info": {
+        "title": "E-Commerce API Documentation",
+        "version": "1.0.0",
+        "description": "API documentation for the e-commerce platform"
+    },
+    "servers": [
+        {
+            "url": "http://localhost:3000",
+            "description": "Development server"
+        }
+    ],
+    "components": {
+        "securitySchemes": {
+            "BearerAuth": {
+                "type": "http",
+                "scheme": "bearer",
+                "bearerFormat": "JWT"
+            }
+        }
+    },
+    "security": [
+        {
+            "BearerAuth": []
+        }
+    ],
+    "tags": [
+        { "name": "Auth", "description": "User authentication endpoints" },
+        { "name": "Orders", "description": "Endpoints for orders" },
+        { "name": "Cart", "description": "Endpoints for cart" },
+        { "name": "Admin", "description": "Admin-only endpoints" },
+        { "name": "Admin - Orders", "description": "Admin-only endpoints for orders" },
+        { "name": "Admin - Products", "description": "Admin-only endpoints for products" },
+        { "name": "Admin - Categories", "description": "Admin-only endpoints for categories" },
+        { "name": "Admin - Brands", "description": "Admin-only endpoints for brands" }
+    ]
+}

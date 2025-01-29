@@ -1,44 +1,23 @@
-const swaggerJsdoc = require('swagger-jsdoc');
 const swaggerUi = require('swagger-ui-express');
-const swaggerDocument = require('./swagger.output.json');
+const fs = require('fs');
 
-// Swagger definition
-const swaggerDefinition = {
-    openapi: '3.0.0',
-    info: {
-        title: 'E-Commerce API Documentation',
-        version: '1.0.0',
-        description: 'API documentation for the e-commerce platform',
-    },
-    servers: [
-        {
-            url: 'http://localhost:3000', // Replace with your server URL
-            description: 'Development server',
-        },
-    ],
-    components: {
-        securitySchemes: {
-            BearerAuth: {
-                type: 'http',
-                scheme: 'bearer',
-                bearerFormat: 'JWT',
-            },
-        },
-    },
-    security: [
-        {
-            BearerAuth: [],
-        },
-    ],
+// Load base definition
+const baseDocs = JSON.parse(fs.readFileSync('./swagger/base.json', 'utf8'));
+const authDocs = JSON.parse(fs.readFileSync('./swagger/auth.json', 'utf8'));
+const orderDocs = JSON.parse(fs.readFileSync('./swagger/order.json', 'utf8'));
+const cartDocs = JSON.parse(fs.readFileSync('./swagger/cart.json', 'utf8'));
+const adminDocs = JSON.parse(fs.readFileSync('./swagger/admin.json', 'utf8'));
+
+// Merge all Swagger documents
+const swaggerDocument = {
+    ...baseDocs, // Keep global definitions
+    paths: {
+        ...authDocs.paths,
+        ...orderDocs.paths,
+        ...cartDocs.paths,
+        ...adminDocs.paths
+    }
 };
-
-// Options for the swagger docs
-const options = {
-    swaggerDefinition,
-    apis: ['./routes/*.js'], // Files with your endpoints
-};
-
-const swaggerSpec = swaggerJsdoc(options);
 
 const setupSwagger = (app) => {
     app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));

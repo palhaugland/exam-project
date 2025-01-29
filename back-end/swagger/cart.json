@@ -1,0 +1,83 @@
+  {
+    "paths": {
+      "/cart": {
+        "post": {
+          "tags": ["Cart"],
+          "summary": "Add product to cart",
+          "security": [
+            { "BearerAuth": [] }
+          ],
+          "requestBody": {
+            "required": true,
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "productId": { "type": "integer" },
+                    "quantity": { "type": "integer" }
+                  }
+                },
+                "example": {
+                  "productId": 1,
+                  "quantity": 2
+                }
+              }
+            }
+          },
+          "responses": {
+            "201": { "description": "Product added to cart successfully" },
+            "400": { "description": "Invalid input" },
+            "500": { "description": "Internal server error" }
+          }
+        },
+        "get": {
+          "tags": ["Cart"],
+          "summary": "Get cart",
+          "security": [
+            { "BearerAuth": [] }
+          ],
+          "responses": {
+            "200": { "description": "Cart retrieved successfully" },
+            "500": { "description": "Internal server error" }
+          }
+        }
+      },
+      "/cart/{id}": {
+        "delete": {
+          "tags": ["Cart"],
+          "summary": "Remove product from cart",
+          "security": [
+            { "BearerAuth": [] }
+          ],
+          "parameters": [
+            {
+              "in": "path",
+              "name": "id",
+              "required": true,
+              "schema": { "type": "integer" },
+              "description": "Product ID"
+            }
+          ],
+          "responses": {
+            "200": { "description": "Product removed from cart successfully" },
+            "404": { "description": "Product not found" },
+            "500": { "description": "Internal server error" }
+          }
+        }
+      },
+      "/cart/checkout/now": {
+        "post": {
+          "tags": ["Cart"],
+          "summary": "Checkout cart",
+          "security": [
+            { "BearerAuth": [] }
+          ],
+          "responses": {
+            "200": { "description": "Cart checked out successfully" },
+            "500": { "description": "Internal server error" }
+          }
+        }
+      }
+    }
+  }
