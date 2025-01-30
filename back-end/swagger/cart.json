@@ -1,36 +1,51 @@
   {
     "paths": {
       "/cart": {
-        "post": {
-          "tags": ["Cart"],
-          "summary": "Add product to cart",
-          "security": [
-            { "BearerAuth": [] }
-          ],
-          "requestBody": {
-            "required": true,
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "productId": { "type": "integer" },
-                    "quantity": { "type": "integer" }
-                  }
-                },
-                "example": {
-                  "productId": 1,
-                  "quantity": 2
-                }
-              }
+  "post": {
+    "tags": ["Cart"],
+    "summary": "Add product to cart",
+    "security": [{ "BearerAuth": [] }],
+    "requestBody": {
+      "required": true,
+      "content": {
+        "application/json": {
+          "schema": {
+            "type": "object",
+            "properties": {
+              "productId": { "type": "integer" },
+              "quantity": { "type": "integer" }
             }
           },
-          "responses": {
-            "201": { "description": "Product added to cart successfully" },
-            "400": { "description": "Invalid input" },
-            "500": { "description": "Internal server error" }
+          "example": {
+            "productId": 1,
+            "quantity": 2
           }
-        },
+        }
+      }
+    },
+    "responses": {
+      "201": {
+        "description": "Product added to cart successfully",
+        "content": {
+          "application/json": {
+            "example": {
+              "success": true,
+              "cartItem": {
+                "id": 3,
+                "cartId": 1,
+                "productId": 1,
+                "quantity": 2,
+                "createdAt": "2024-01-30T12:34:56Z",
+                "updatedAt": "2024-01-30T12:34:56Z"
+              }
+            }
+          }
+        }
+      },
+      "400": { "description": "Invalid input or insufficient stock" },
+      "500": { "description": "Internal server error" }
+         }
+       },
         "get": {
           "tags": ["Cart"],
           "summary": "Get cart",
@@ -72,11 +87,33 @@
         "post": {
           "tags": ["Cart"],
           "summary": "Checkout cart",
-          "security": [
-            { "BearerAuth": [] }
-          ],
+          "security": [{ "BearerAuth": [] }],
           "responses": {
-            "200": { "description": "Cart checked out successfully" },
+            "200": {
+              "description": "Cart checked out successfully",
+              "content": {
+                "application/json": {
+                  "example": {
+                    "success": true,
+                    "order": {
+                      "id": 5,
+                      "userId": 2,
+                      "status": "In Progress",
+                      "createdAt": "2024-01-30T12:34:56Z",
+                      "updatedAt": "2024-01-30T12:34:56Z"
+                    },
+                    "message": "Checkout complete",
+                    "skippedItems": [
+                      {
+                        "productId": 3,
+                        "message": "Insufficient stock"
+                      }
+                    ]
+                  }
+                }
+              }
+            },
+            "400": { "description": "Cart is empty" },
             "403": { "description": "Forbidden. User access required." },
             "500": { "description": "Internal server error" }
           }

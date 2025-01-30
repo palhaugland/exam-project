@@ -21,18 +21,22 @@ router.post('/', authenticateToken, async (req, res) => {
         const [cart] = await Cart.findOrCreate({ where: { userId: req.user.id } });
 
         // Find or create a cart item
-        const [cartItem] = await CartItem.findOrCreate({
-            where: { cartId: cart.id, productId },
-            defaults: { quantity },
+        let cartItem = await CartItem.findOne({
+            where: { cartId: cart.id, productId }
         });
 
-        // Update quantity if the item already exists
-        if (!cartItem.isNewRecord) {
+        if (cartItem) {
             cartItem.quantity += quantity;
             if (cartItem.quantity > product.stock) {
                 return res.status(400).json({ success: false, error: 'Insufficient stock to update the cart item.' });
             }
             await cartItem.save();
+        } else {
+            cartItem = await CartItem.create({
+                cartId: cart.id,
+                productId,
+                quantity
+            });
         }
 
         return res.status(201).json({ success: true, cartItem });
@@ -70,10 +74,15 @@ router.get('/', authenticateToken, async (req, res) => {
 router.delete('/:id', authenticateToken, async (req, res) => {
     try {
         const { id } = req.params;
+        
+        // Find cart item and verify ownership
+        const cartItem = await CartItem.findOne({
+            where: { id },
+            include: [{ model: Cart, where: { userId: req.user.id } }]
+        });
 
-        const cartItem = await CartItem.findByPk(id);
         if (!cartItem) {
-            return res.status(404).json({ success: false, error: 'Cart item not found.' });
+            return res.status(404).json({ success: false, error: 'Cart item not found or does not belong to user.' });
         }
 
         await cartItem.destroy();
@@ -84,6 +93,7 @@ router.delete('/:id', authenticateToken, async (req, res) => {
     }
 });
 
+// Checkout the cart
 // Checkout the cart
 router.post('/checkout/now', authenticateToken, async (req, res) => {
     try {
@@ -102,11 +112,17 @@ router.post('/checkout/now', authenticateToken, async (req, res) => {
             status: 'In Progress',
         });
 
-        // Create order items and update stock
+        let unavailableItems = [];
+        let processedItems = [];
+
         for (const cartItem of cart.CartItems) {
             const product = await Product.findByPk(cartItem.productId);
             if (product.stock < cartItem.quantity) {
-                return res.status(400).json({ success: false, error: 'Insufficient stock for checkout.' });
+                unavailableItems.push({
+                    productId: cartItem.productId,
+                    message: 'Insufficient stock'
+                });
+                continue; // Skip this item
             }
 
             await OrderItem.create({
@@ -118,12 +134,20 @@ router.post('/checkout/now', authenticateToken, async (req, res) => {
 
             product.stock -= cartItem.quantity;
             await product.save();
+            processedItems.push(cartItem.productId);
         }
 
-        // Clear the cart
-        await CartItem.destroy({ where: { cartId: cart.id } });
+        // Clear processed items from cart
+        await CartItem.destroy({
+            where: { cartId: cart.id, productId: processedItems }
+        });
 
-        return res.status(200).json({ success: true, order });
+        return res.status(200).json({
+            success: true,
+            order,
+            message: 'Checkout complete',
+            skippedItems: unavailableItems.length > 0 ? unavailableItems : null
+        });
     } catch (error) {
         console.error('Error during checkout:', error);
         return res.status(500).json({ success: false, error: error.message });
