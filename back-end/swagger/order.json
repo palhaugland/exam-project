@@ -1,74 +1,48 @@
 {
   "paths":{
-    "/orders": {
-        "post": {
-          "tags": ["Orders"],
-          "summary": "Create a new order",
-          "security": [
-            { "BearerAuth": [] }
-          ],
-          "requestBody": {
-            "required": true,
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "products": {
-                      "type": "array",
-                      "items": {
-                        "type": "object",
-                        "properties": {
-                          "id": { "type": "integer" },
-                          "quantity": { "type": "integer" }
-                        }
-                      }
-                    }
-                  }
-                }
+    "/cart/checkout/now": {
+            "post": {
+             "tags": ["Orders"],
+             "summary": "Checkout cart and create an order",
+              "security": [{ "BearerAuth": [] }],
+              "responses": {
+                    "201": { "description": "Order created successfully" },
+                    "400": { "description": "Invalid input" },
+                    "500": { "description": "Internal server error" }
               }
             }
-          },
-          "responses": {
-            "201": { "description": "Order created successfully" },
-            "400": { "description": "Invalid input" },
-            "500": { "description": "Internal server error" }
           }
         },
         "get": {
           "tags": ["Orders"],
-          "summary": "Get all orders",
-          "security": [
-            { "BearerAuth": [] }
-          ],
+          "summary": "View all orders (Admin access only)",
+          "security": [{ "BearerAuth": [] }],
           "responses": {
             "200": { "description": "Orders retrieved successfully" },
+            "403": { "description": "Forbidden. User access required." },
             "500": { "description": "Internal server error" }
           }
-        }
-      },
+        },
       "/orders/{id}": {
         "get": {
           "tags": ["Orders"],
-          "summary": "Get order details",
-          "security": [
-            { "BearerAuth": [] }
-          ],
+          "summary": "Get a specific order (User access only)",
+          "security": [{ "BearerAuth": [] }],
           "parameters": [
             {
               "in": "path",
               "name": "id",
               "required": true,
               "schema": { "type": "integer" },
-              "description": "Order ID"
+              "description": "Order ID (Users can pnly access their own orders)"
             }
           ],
           "responses": {
             "200": { "description": "Order details retrieved successfully" },
+            "403": { "description": "Forbidden. User access required." },
             "404": { "description": "Order not found" },
             "500": { "description": "Internal server error" }
-          }
         }
-      }
+     }
   }
 }

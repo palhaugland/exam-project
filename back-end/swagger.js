@@ -10,7 +10,7 @@ const adminDocs = JSON.parse(fs.readFileSync('./swagger/admin.json', 'utf8'));
 
 // Merge all Swagger documents
 const swaggerDocument = {
-    ...baseDocs, // Keep global definitions
+    ...baseDocs,
     paths: {
         ...authDocs.paths,
         ...orderDocs.paths,
@@ -19,8 +19,14 @@ const swaggerDocument = {
     }
 };
 
+const swaggerOptions = {
+    swaggerOptions: {
+        persistAuthorization: true,  
+    }
+};
+
 const setupSwagger = (app) => {
-    app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
+    app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument, swaggerOptions));
     console.log('Swagger documentation available at http://localhost:3000/api-docs');
 };
 
