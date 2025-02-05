@@ -41,13 +41,27 @@ router.delete('/products/:id', authenticateToken, authorizeAdmin, async (req, re
     }
 });
 
-router.get('/products', authenticateToken, authorizeAdmin, async (req, res) => {
+router.get('/products/', authenticateToken, authorizeAdmin, async (req, res) => {
     try {
         const products = await Product.findAll();
         res.status(200).json({ success: true, products });
     } catch (error) {
         console.error('Error fetching products:', error);
         res.status(500).json({ success: false, error: 'Failed to fetch products.' });
+    }
+});
+
+router.get('/products/:id', authenticateToken, authorizeAdmin, async (req, res) => {
+    try {
+        const { id } = req.params;
+        const product = await Product.findByPk(id);
+        if (!product) {
+            return res.status(404).json({ success: false, error: 'Product not found.' });
+        }
+        res.status(200).json({ success: true, product });
+    } catch (error) {
+        console.error('Error fetching product:', error);
+        res.status(500).json({ success: false, error: 'Failed to fetch product.' });
     }
 });
 
@@ -63,16 +77,28 @@ router.post('/categories', authenticateToken, authorizeAdmin, async (req, res) =
     }
 });
 
-router.put('/categories/:id', authenticateToken, authorizeAdmin, async (req, res) => {
+router.get("/categories", authenticateToken, authorizeAdmin, async (req, res) => {
     try {
-        const { id } = req.params;
-        const { name } = req.body;
-        await Category.update({ name }, { where: { id } });
-        res.status(200).json({ success: true, message: 'Category updated.' });
+        const categories = await Category.findAll();
+        res.status(200).json({ success: true, categories });
     } catch (error) {
-        console.error('Error updating category:', error);
-        res.status(500).json({ success: false, error: 'Failed to update category.' });
+        console.error("Error fetching categories:", error);
+        res.status(500).json({ success: false, error: "Failed to fetch categories." });
     }
+});
+
+router.put('/categories/:id', async (req, res) => {
+  try {
+    const category = await Category.findByPk(req.params.id);
+    if (!category) {
+      return res.status(404).json({ success: false, message: 'Category not found' });
+    }
+    category.name = req.body.name;
+    await category.save();
+    res.status(200).json({ success: true, category });
+  } catch (error) {
+    res.status(500).json({ success: false, error: error.message });
+  }
 });
 
 router.delete('/categories/:id', authenticateToken, authorizeAdmin, async (req, res) => {
@@ -98,16 +124,28 @@ router.post('/brands', authenticateToken, authorizeAdmin, async (req, res) => {
     }
 });
 
-router.put('/brands/:id', authenticateToken, authorizeAdmin, async (req, res) => {
+router.get("/brands", authenticateToken, authorizeAdmin, async (req, res) => {
     try {
-        const { id } = req.params;
-        const { name } = req.body;
-        await Brand.update({ name }, { where: { id } });
-        res.status(200).json({ success: true, message: 'Brand updated.' });
+        const brands = await Brand.findAll();
+        res.status(200).json({ success: true, brands });
     } catch (error) {
-        console.error('Error updating brand:', error);
-        res.status(500).json({ success: false, error: 'Failed to update brand.' });
+        console.error("Error fetching brands:", error);
+        res.status(500).json({ success: false, error: "Failed to fetch brands." });
     }
+});
+
+router.put('/brands/:id', async (req, res) => {
+  try {
+    const brand = await Brand.findByPk(req.params.id);
+    if (!brand) {
+      return res.status(404).json({ success: false, message: 'Brand not found' });
+    }
+    brand.name = req.body.name;
+    await brand.save();
+    res.status(200).json({ success: true, brand });
+  } catch (error) {
+    res.status(500).json({ success: false, error: error.message });
+  }
 });
 
 router.delete('/brands/:id', authenticateToken, authorizeAdmin, async (req, res) => {

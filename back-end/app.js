@@ -9,9 +9,9 @@ var setupSwagger = require('./swagger');
 var db = require('./models');
 
 // Import routes
+var initRouter = require('./routes/init');
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
-var initRouter = require('./routes/init');
 var authRouter = require('./routes/auth');
 var adminRouter = require('./routes/admin');
 var cartRouter = require('./routes/cart');
@@ -43,7 +43,7 @@ app.use('/orders', ordersRouter);
 
 // Sync database
 db.sequelize
-    .sync({ force: false }) // Set `force: true` only for development to recreate the tables
+    .sync({ force: false }) 
     .then(() => {
         console.log('Database synced successfully.');
     })
