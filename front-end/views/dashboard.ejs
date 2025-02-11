@@ -1,20 +1,74 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <title>Admin Dashboard</title>
-    <link rel="stylesheet" href="/stylesheets/style.css">
+  <meta charset="UTF-8">
+  <title>Admin Dashboard</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/css/bootstrap.min.css">
 </head>
 <body>
+  <%- include('partials/navbar') %>
+
+  <div class="container mt-4">
     <h1>Welcome, <%= username %>!</h1>
-    <nav>
-        <ul>
-            <li><a href="/products">Manage Products</a></li>
-            <li><a href="/categories">Manage Categories</a></li>
-            <li><a href="/brands">Manage Brands</a></li>
-            <li><a href="/orders">Manage Orders</a></li>
-            <li><a href="/auth/logout">Logout</a></li>
-        </ul>
-    </nav>
+    <div class="row text-center">
+      <div class="col-md-3">
+        <div class="card text-white bg-primary mb-3">
+          <div class="card-header">Products</div>
+          <div class="card-body">
+            <h5 class="card-title" id="totalProducts">0</h5>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-3">
+        <div class="card text-white bg-success mb-3">
+          <div class="card-header">Orders</div>
+          <div class="card-body">
+            <h5 class="card-title" id="totalOrders">0</h5>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-3">
+        <div class="card text-white bg-warning mb-3">
+          <div class="card-header">Users</div>
+          <div class="card-body">
+            <h5 class="card-title" id="totalUsers">0</h5>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-3">
+        <div class="card text-white bg-danger mb-3">
+          <div class="card-header">Pending Orders</div>
+          <div class="card-body">
+            <h5 class="card-title" id="pendingOrders">0</h5>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    async function fetchDashboardData() {
+      try {
+        const [productsRes, ordersRes, usersRes] = await Promise.all([
+          fetch('/admin/products'),
+          fetch('/admin/orders'),
+          fetch('/admin/users'),
+        ]);
+
+        const products = await productsRes.json();
+        const orders = await ordersRes.json();
+        const users = await usersRes.json();
+
+        document.getElementById('totalProducts').innerText = products.length;
+        document.getElementById('totalOrders').innerText = orders.length;
+        document.getElementById('totalUsers').innerText = users.length;
+        document.getElementById('pendingOrders').innerText = orders.filter(o => o.status === 'Pending').length;
+      } catch (err) {
+        console.error('Error fetching dashboard data:', err);
+      }
+    }
+
+    fetchDashboardData();
+  </script>
 </body>
 </html>
