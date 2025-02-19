@@ -3,7 +3,7 @@ const { authenticateToken, authorizeAdmin } = require('../middleware/auth');
 const { Product, Category, Brand, Order } = require('../models');
 const router = express.Router();
 
-// Products Management
+// Products 
 router.post('/products', authenticateToken, authorizeAdmin, async (req, res) => {
     try {
         const { name, description, price, stock, categoryId, brandId } = req.body;
@@ -84,6 +84,21 @@ router.get("/categories", authenticateToken, authorizeAdmin, async (req, res) =>
     } catch (error) {
         console.error("Error fetching categories:", error);
         res.status(500).json({ success: false, error: "Failed to fetch categories." });
+    }
+});
+
+router.get('/categories/:id', authenticateToken, authorizeAdmin, async (req, res) => {
+    try {
+        const { id } = req.params;
+        const category = await Category.findByPk(id);
+        if (!category) {
+            return res.status(404).json({ success: false, error: 'Category not found.' });
+        }
+        res.status(200).json({ success: true, category });
+    }
+    catch (error) {
+        console.error('Error fetching category:', error);
+        res.status(500).json({ success: false, error: 'Failed to fetch category.' });
     }
 });
 
