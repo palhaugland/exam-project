@@ -149,6 +149,21 @@ router.get("/brands", authenticateToken, authorizeAdmin, async (req, res) => {
     }
 });
 
+router.get('/brands/:id', authenticateToken, authorizeAdmin, async (req, res) => {
+    try {
+        const { id } = req.params;
+        const brand = await Brand.findByPk(id);
+        if (!brand) {
+            return res.status(404).json({ success: false, error: 'Brand not found.' });
+        }
+        res.status(200).json({ success: true, brand });
+    }
+    catch (error) {
+        console.error('Error fetching brand:', error);
+        res.status(500).json({ success: false, error: 'Failed to fetch brand.' });
+    }
+});
+
 router.put('/brands/:id', async (req, res) => {
   try {
     const brand = await Brand.findByPk(req.params.id);
@@ -166,7 +181,11 @@ router.put('/brands/:id', async (req, res) => {
 router.delete('/brands/:id', authenticateToken, authorizeAdmin, async (req, res) => {
     try {
         const { id } = req.params;
-        await Brand.destroy({ where: { id } });
+        const brand = await Brand.findByPk(id);
+        if (!brand) {
+            return res.status(404).json({ success: false, error: 'Brand not found.' });
+        }
+        await brand.destroy();
         res.status(200).json({ success: true, message: 'Brand deleted.' });
     } catch (error) {
         console.error('Error deleting brand:', error);
