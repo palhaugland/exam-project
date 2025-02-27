@@ -1,6 +1,7 @@
 const express = require('express');
 const { authenticateToken } = require('../middleware/auth');
 const { Cart, CartItem, Product, Order, OrderItem } = require('../models');
+const { updateMembershipStatus } = require('../utils/membership');
 const router = express.Router();
 
 // Add a product to the cart
@@ -94,7 +95,6 @@ router.delete('/:id', authenticateToken, async (req, res) => {
 });
 
 // Checkout the cart
-// Checkout the cart
 router.post('/checkout/now', authenticateToken, async (req, res) => {
     try {
         const cart = await Cart.findOne({
@@ -141,6 +141,9 @@ router.post('/checkout/now', authenticateToken, async (req, res) => {
         await CartItem.destroy({
             where: { cartId: cart.id, productId: processedItems }
         });
+
+        // Update membership status after checkout
+        await updateMembershipStatus(req.user.id);
 
         return res.status(200).json({
             success: true,

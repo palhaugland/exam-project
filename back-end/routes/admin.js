@@ -193,6 +193,25 @@ router.delete('/brands/:id', authenticateToken, authorizeAdmin, async (req, res)
     }
 });
 
+// Orders Management
+// Admin: Get all orders
+router.get('/orders', authenticateToken, authorizeAdmin, async (req, res) => {
+    try {
+        const orders = await Order.findAll({
+            include: [
+                {
+                    model: OrderItem,
+                    include: [Product],
+                },
+            ],
+        });
+        return res.status(200).json({ success: true, orders });
+    } catch (error) {
+        console.error('Error fetching orders:', error);
+        return res.status(500).json({ success: false, error: error.message });
+    }
+});
+
 // Admin: Update order status
 router.put('/orders/:id', authenticateToken, authorizeAdmin, async (req, res) => {
     try {
@@ -217,6 +236,23 @@ router.put('/orders/:id', authenticateToken, authorizeAdmin, async (req, res) =>
     } catch (error) {
         console.error('Error updating order status:', error);
         return res.status(500).json({ success: false, error: error.message });
+    }
+});
+
+router.put('/orders/:id/cancel', authenticateToken, authorizeAdmin, async (req, res) => {
+    try {
+        const { id } = req.params;
+        const order = await Order.findByPk(id);
+        if (!order) {
+            return res.status(404).json({ success: false, error: 'Order not found.' });
+        }
+        // Cancel order
+        order.status = 'Cancelled';
+        await order.save();
+        return res.status(200).json({ success: true, message: 'Order cancelled.', order });
+    } catch (error) {
+        console.error('Error cancelling order:', error);
+        return res.status(500).json({ success: false, error: error.message});
     }
 });
 
