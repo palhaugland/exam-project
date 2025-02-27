@@ -1,7 +1,7 @@
 const express = require('express');
 const { authenticateToken } = require('../middleware/auth');
 const { Cart, CartItem, Product, Order, OrderItem } = require('../models');
-const { updateMembershipStatus } = require('../utils/membership');
+const { updateUserMembership } = require('../utils/membership');
 const router = express.Router();
 
 // Add a product to the cart
@@ -143,7 +143,7 @@ router.post('/checkout/now', authenticateToken, async (req, res) => {
         });
 
         // Update membership status after checkout
-        await updateMembershipStatus(req.user.id);
+        await updateUserMembership(req.user.id);
 
         return res.status(200).json({
             success: true,
