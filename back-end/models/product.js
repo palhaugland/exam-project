@@ -10,7 +10,11 @@ module.exports = (sequelize) => {
             stock: DataTypes.INTEGER,
             categoryId: DataTypes.INTEGER,
             brandId: DataTypes.INTEGER,
-            isDeleted: { type: DataTypes.BOOLEAN, defaultValue: false },
+            active: {
+                type: DataTypes.BOOLEAN,
+                defaultValue: true,
+                allowNull: false,
+            },
         },
         { timestamps: true }
     );

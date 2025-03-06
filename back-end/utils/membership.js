@@ -1,26 +1,31 @@
-const { OrderItem, User } = require('../models');
+const { Order, User } = require('../models');
 
-const updateUserMembership = async (userId) => {
+async function updateUserMembership(userId) {
     try {
-        const totalItemsPurchased = await OrderItem.sum('quantity', {
-            include: [{ model: Order, where: { userId } }]
+        // Fetch all completed orders of the user
+        const totalItemsPurchased = await Order.count({
+            where: { userId: userId, status: 'Completed' },
         });
-
+        
         //Find membership level
-        let newMembership = 'Bronze';
+        let newMembershipStatus = 'Bronze';
         if (totalItemsPurchased >= 15) {
-            newMembership = 'Silver';
+            newMembershipStatus = 'Silver';
         }
         if (totalItemsPurchased >= 31) {
-            newMembership = 'Gold';
+            newMembershipStatus = 'Gold';
         }
 
         // Update user membership
-        await User.update({ membership: newMembership }, { where: { id: userId } });
-        console.log(`Membership updated for user ${userId} to ${newMembership}`);
+        await User.update(
+            { membershipStatus: newMembershipStatus },
+            { where: { id: userId } }
+        );
+
+        console.log(`Updated user ${userId} to ${newMembershipStatus} membership.`);
     } catch (error) {
         console.error('Error updating user membership:', error);
     }
-};
+}
 
 module.exports = { updateUserMembership };

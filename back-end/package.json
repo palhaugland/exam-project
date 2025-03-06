@@ -32,6 +32,7 @@
   "license": "ISC",
   "devDependencies": {
     "jest": "^29.7.0",
+    "sequelize-cli": "^6.6.2",
     "sqlite3": "^5.1.7",
     "supertest": "^7.0.0"
   }

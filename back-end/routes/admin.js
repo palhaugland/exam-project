@@ -1,7 +1,75 @@
 const express = require('express');
 const { authenticateToken, authorizeAdmin } = require('../middleware/auth');
-const { Product, Category, Brand, Order, OrderItem } = require('../models');
+const { Product, Category, Brand, Order, OrderItem, User } = require('../models');
 const router = express.Router();
+
+// Users Management
+// Fetch all users
+router.get('/users', authenticateToken, authorizeAdmin, async (req, res) => {
+    try {
+        const users = await User.findAll({attributes: {exclude: ['password']}});
+        res.status(200).json({ success: true, users });
+    } catch (error) {
+        console.error('Error fetching users:', error);
+        res.status(500).json({ success: false, error: 'Failed to fetch users.' });
+    }
+}
+);
+
+// Fetch a specific user
+router.get('/users/:id', authenticateToken, authorizeAdmin, async (req, res) => {
+    try {
+        const { id } = req.params;
+        const user = await User.findByPk(id, {attributes: {exclude: ['password']}});
+        if (!user) {
+            return res.status(404).json({ success: false, error: 'User not found.' });
+        }
+        res.status(200).json({ success: true, user });
+    } catch (error) {
+        console.error('Error fetching user:', error);
+        res.status(500).json({ success: false, error: 'Failed to fetch user.' });
+    }
+}
+);
+
+// Update a user
+router.put('/users/:id', authenticateToken, authorizeAdmin, async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { email, password, role } = req.body;
+        const user = await User.findByPk(id);
+        if (!user) {
+            return res.status(404).json({ success: false, error: 'User not found.' });
+        }
+        user.email = email;
+        user.password = password;
+        user.role = role;
+        await user.save();
+        res.status(200).json({ success: true, user });
+    } catch (error) {
+        console.error('Error updating user:', error);
+        res.status(500).json({ success: false, error: 'Failed to update user.' });
+    }
+});
+
+// Delete a user
+router.delete('/users/:id', authenticateToken, authorizeAdmin, async (req, res) => {
+    try {
+        const { id } = req.params;
+        const user = await User.findByPk(id);
+        if (!user) {
+            return res.status(404).json({ success: false, error: 'User not found.' });
+        }
+
+        user.active = false;
+        await user.save();
+
+        res.status(200).json({ success: true, message: 'User deactivated.' });
+    } catch (error) {
+        console.error('Error deactivating user:', error);
+        res.status(500).json({ success: false, error: 'Failed to delete user.' });
+    }
+});
 
 // Products 
 router.post('/products', authenticateToken, authorizeAdmin, async (req, res) => {
@@ -33,11 +101,35 @@ router.put('/products/:id', authenticateToken, authorizeAdmin, async (req, res) 
 router.delete('/products/:id', authenticateToken, authorizeAdmin, async (req, res) => {
     try {
         const { id } = req.params;
-        await Product.destroy({ where: { id } });
+        const product = await Product.findByPk(id);
+        if (!product) {
+            return res.status(404).json({ success: false, error: 'Product not found.' });
+        }
+
+        product.active = false;
+        await product.save();
         res.status(200).json({ success: true, message: 'Product deleted.' });
     } catch (error) {
         console.error('Error deleting product:', error);
         res.status(500).json({ success: false, error: 'Failed to delete product.' });
+    }
+});
+
+// Reactivate a product
+router.put('/products/:id/reactivate', authenticateToken, authorizeAdmin, async (req, res) => {
+    try {
+        const { id } = req.params;
+        const product = await Product.findByPk(id);
+        if (!product) {
+            return res.status(404).json({ success: false, error: 'Product not found.' });
+        }
+
+        product.active = true;
+        await product.save();
+        res.status(200).json({ success: true, message: 'Product reactivated.' });
+    } catch (error) {
+        console.error('Error reactivating product:', error);
+        res.status(500).json({ success: false, error: 'Failed to reactivate product.' });
     }
 });
 
@@ -276,17 +368,35 @@ router.put('/orders/:id', authenticateToken, authorizeAdmin, async (req, res) =>
 router.put('/orders/:id/cancel', authenticateToken, authorizeAdmin, async (req, res) => {
     try {
         const { id } = req.params;
-        const order = await Order.findByPk(id);
+        const order = await Order.findByPk(id, {
+            include: [{ model: OrderItem }] 
+        });
+
         if (!order) {
             return res.status(404).json({ success: false, error: 'Order not found.' });
         }
-        // Cancel order
+
+        if (order.status === 'Cancelled') {
+            return res.status(400).json({ success: false, error: 'Order is already cancelled.' });
+        }
+
+        // Restore stock for each product in the order
+        for (const item of order.OrderItems) {
+            const product = await Product.findByPk(item.productId);
+            if (product) {
+                product.stock += item.quantity;
+                await product.save();
+            }
+        }
+
+        // Cancel the order
         order.status = 'Cancelled';
         await order.save();
-        return res.status(200).json({ success: true, message: 'Order cancelled.', order });
+
+        return res.status(200).json({ success: true, message: 'Order cancelled, stock restored.', order });
     } catch (error) {
         console.error('Error cancelling order:', error);
-        return res.status(500).json({ success: false, error: error.message});
+        return res.status(500).json({ success: false, error: error.message });
     }
 });
 
