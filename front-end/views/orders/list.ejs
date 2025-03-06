@@ -12,7 +12,7 @@
     <div class="container mt-4">
         <h1>Orders Management</h1>
         <table class="table table-bordered">
-            <thread>
+            <thead>
                 <tr>
                     <th>Order ID</th>
                     <th>Order Number</th>
@@ -20,7 +20,7 @@
                     <th>Status</th>
                     <th>Actions</th>
                 </tr>
-            </thread>
+            </thead>
             <tbody>
                 <% orders.forEach(order => { %>
                     <tr>
@@ -29,11 +29,11 @@
                         <td><%= order.user_id %></td>
                         <td><%= order.status %></td>
                         <td>
-                            <a href="<%= isAdmin ? '/orders/admin/view/' + order.id : '/orders/view/' + order.id %>" class="btn btn-primary">View</a>
-                            <% if (typeof isAdmin !== 'undefined' && isAdmin && order.status !== 'Cancelled') { %>
-                            <form action="/orders/cancel/<%= order.id %>" method="POST" style="display: inline;">
-                                <button type="submit" class="btn btn-danger" onclick="return confirm('Are you sure you want to cancel the order?')">Cancel</button>
-                            </form>
+                            <a href="/orders/view/<%= order.id %>" class="btn btn-primary">View</a>
+                            <% if (order.status !== 'Cancelled') { %>
+                                <form action="/orders/cancel/<%= order.id %>" method="POST" style="display: inline;">
+                                    <button type="submit" class="btn btn-danger" onclick="return confirm('Are you sure you want to cancel the order?')">Cancel</button>
+                                </form>
                             <% } %>
                         </td>
                     </tr>

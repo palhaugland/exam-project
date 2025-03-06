@@ -13,33 +13,30 @@
         <h1>Order Details</h1>
         <p>Order Number: <%= order.orderNumber %></p>
         <p>Status: <%= order.status %></p>
-        <h3>Order items</h3>
+        <h3>Order Items</h3>
         <table class="table table-bordered">
             <thead>
                 <tr>
                     <th>Product</th>
                     <th>Quantity</th>
-                    <th>Price</th>
                 </tr>
             </thead>
             <tbody>
-                <tbody>
-                    <% if (order && order.OrderItems && order.OrderItems.length > 0) { %>
-                        <% order.OrderItems.forEach(item => { %> 
-                            <tr>
-                                <td><%= item.Product.name %></td> 
-                                <td><%= item.quantity %></td>
-                            </tr>
-                        <% }); %>
-                    <% } else { %>
+                <% if (order && order.OrderItems && order.OrderItems.length > 0) { %>
+                    <% order.OrderItems.forEach(item => { %> 
                         <tr>
-                            <td colspan="3">No items found for this order.</td>
+                            <td><%= item.Product.name %></td> 
+                            <td><%= item.quantity %></td>
                         </tr>
-                    <% } %>
-                </tbody>
+                    <% }); %>
+                <% } else { %>
+                    <tr>
+                        <td colspan="2">No items found for this order.</td>
+                    </tr>
+                <% } %>
             </tbody>
         </table>
-        <a href="<%= isAdmin ? '/orders/admin' : '/orders' %>" class="btn btn-secondary">Back to orders</a>
-    
+        <a href="/orders" class="btn btn-secondary">Back to Orders</a>
+    </div>
 </body>
 </html>
