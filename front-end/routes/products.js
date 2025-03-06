@@ -8,21 +8,56 @@ function ensureAuthenticated(req, res, next) {
     res.redirect('/auth/login');
 }
 
-// List Products
+// Fetch and display products, categories, and brands
 router.get('/', ensureAuthenticated, async (req, res) => {
     try {
-        const response = await fetch('http://localhost:3000/admin/products', {
-            headers: { 
+        const { search, category, brand } = req.query;
+
+        // Fetch products with filters
+        const productResponse = await fetch(`http://localhost:3000/admin/products?search=${search || ''}&category=${category || ''}&brand=${brand || ''}`, {
+            headers: {
                 'Content-Type': 'application/json',
-                'Authorization': `Bearer ${req.session.token}`
+                'Authorization': `Bearer ${req.session.token}`,
             }
         });
-        const data = await response.json();
-        console.log("Fetched products:", data);
-        res.render('products/list', { products: data.products });
+
+        // Fetch categories
+        const categoryResponse = await fetch(`http://localhost:3000/admin/categories`, {
+            headers: { 'Authorization': `Bearer ${req.session.token}` }
+        });
+
+        // Fetch brands
+        const brandResponse = await fetch(`http://localhost:3000/admin/brands`, {
+            headers: { 'Authorization': `Bearer ${req.session.token}` }
+        });
+
+        if (!productResponse.ok || !categoryResponse.ok || !brandResponse.ok) {
+            throw new Error('Failed to fetch products, categories, or brands');
+        }
+
+        const productData = await productResponse.json();
+        const categoryData = await categoryResponse.json();
+        const brandData = await brandResponse.json();
+
+        res.render('products/list', {
+            products: productData.products || [],
+            categories: categoryData.categories || [], 
+            brands: brandData.brands || [], // 
+            searchQuery: search || '',
+            selectedCategory: category || '',
+            selectedBrand: brand || ''
+        });
+
     } catch (error) {
         console.error('Error fetching products:', error);
-        res.render('products/list', { products: [] });
+        res.render('products/list', {
+            products: [],
+            categories: [],
+            brands: [],
+            searchQuery: '',
+            selectedCategory: '',
+            selectedBrand: '',
+        });
     }
 });
 

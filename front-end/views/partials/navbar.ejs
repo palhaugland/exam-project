@@ -1,20 +1,12 @@
-<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-    <a class="navbar-brand" href="/dashboard">Admin Dashboard</a>
+<nav class="navbar navbar-expand-lg bg-dark">
     <div class="collapse navbar-collapse">
       <ul class="navbar-nav mr-auto">
-        <li class="nav-item"><a class="nav-link" href="/products">Products</a></li>
-        <li class="nav-item"><a class="nav-link" href="/categories">Categories</a></li>
-        <li class="nav-item"><a class="nav-link" href="/brands">Brands</a></li>
-        <li class="nav-item">
-          <% if (typeof isAdmin !== 'undefined' && isAdmin) { %>
-            <a class="nav-link" href="/orders/admin">Orders</a>
-          <% } else { %>
-            <a class="nav-link" href="/orders">Orders</a>
-          <% } %>
-        </li>
-        </li>
-        <li class="nav-item"><a class="nav-link" href="/users">Users</a></li>
-        <li class="nav-item"><a class="nav-link" href="/memberships">Memberships</a></li>
+        <li class="nav-item"><a class="nav-link text-light" href="/products"><strong>Products</strong> </a></li>
+        <li class="nav-item"><a class="nav-link text-light" href="/categories">Categories</a></li>
+        <li class="nav-item"><a class="nav-link text-light" href="/brands">Brands</a></li>
+        <li class="nav-item"><a class="nav-link text-light" href="/orders/admin">Orders</a></li>
+        <li class="nav-item"><a class="nav-link text-light" href="/users">Users</a></li>
+        <li class="nav-item"><a class="nav-link text-light" href="/memberships">Memberships</a></li>
       </ul>
       <a href="/auth/logout" class="btn btn-outline-light">Logout</a>
     </div>

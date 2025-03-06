@@ -31,7 +31,7 @@ router.post('/login', async (req, res) => {
             req.session.role = data.user.roleId === 1 ? 'admin' : 'user';
             req.session.userId = data.user.id;
             req.session.save(() => {
-                res.redirect('/dashboard');
+                res.redirect('/products');
             });
         } else {
             console.error("Login API Response Missing User Data:", data);

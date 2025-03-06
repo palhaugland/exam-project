@@ -184,7 +184,27 @@ router.put('/products/:id/reactivate', authenticateToken, authorizeAdmin, async 
 
 router.get('/products/', authenticateToken, authorizeAdmin, async (req, res) => {
     try {
-        const products = await Product.findAll();
+        const { search, category, brand } = req.query;
+        const whereClause = {};
+
+        if (search) {
+            whereClause.name = { [Op.like]: `%${search}%` };
+        }
+        if (category) {
+            whereClause.categoryId = category;
+        }
+        if (brand) {
+            whereClause.brandId = brand;
+        }
+
+        const products = await Product.findAll({
+            where: whereClause,
+            include: [
+                { model: Category, attributes: ['id', 'name'] },
+                { model: Brand, attributes: ['id', 'name'] }
+            ]
+        });
+
         res.status(200).json({ success: true, products });
     } catch (error) {
         console.error('Error fetching products:', error);
