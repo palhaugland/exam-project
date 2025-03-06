@@ -8,7 +8,19 @@ function ensureAuthenticated(req, res, next) {
     res.redirect('/auth/login');
 }
 
-// Admin: List all users
+// Create user form
+router.get('/create', ensureAuthenticated, async (req, res) => {
+  try {
+      res.render('users/create', { successMessage: req.session.successMessage, errorMessage: req.session.errorMessage });
+      req.session.successMessage = null;
+      req.session.errorMessage = null;
+  } catch (error) {
+      console.error('Error rendering create user page:', error);
+      res.redirect('/users');
+  }
+});
+
+// List all users
 router.get('/', ensureAuthenticated, async (req, res) => {
     try {
         const response = await fetch('http://localhost:3000/admin/users', {
@@ -30,7 +42,7 @@ router.get('/', ensureAuthenticated, async (req, res) => {
     }
 });
 
-// Admin: View user details
+// View user details
 router.get('/:id', ensureAuthenticated, async (req, res) => {
     try {
         const response = await fetch(`http://localhost:3000/admin/users/${req.params.id}`, {
@@ -48,8 +60,34 @@ router.get('/:id', ensureAuthenticated, async (req, res) => {
         res.render('users/view', { user: data.user });
     } catch (error) {
         console.error('Error fetching user:', error);
-        res.render('users/view', { user: {} });
+        res.render('users/list', { user: {} });
     }
+});
+
+// Handle user creation
+router.post('/create', ensureAuthenticated, async (req, res) => {
+  try {
+      const { firstname, lastname, username, email, password, address, phone, roleId } = req.body;
+
+      const response = await fetch(`http://localhost:3000/admin/users`, {
+          method: 'POST',
+          headers: {
+              'Content-Type': 'application/json',
+              'Authorization': `Bearer ${req.session.token}`,
+          },
+          body: JSON.stringify({ firstname, lastname, username, email, password, address, phone, roleId }),
+      });
+
+      const data = await response.json(); 
+      if (!response.ok) throw new Error(`Failed to create user: ${data.error}`);
+
+      req.session.successMessage = 'User created successfully!';
+      res.redirect('/users');
+  } catch (error) {
+      console.error('Error creating user:', error.message); 
+      req.session.errorMessage = error.message; 
+      res.redirect('/users/create');
+  }
 });
 
 // Edit user form
@@ -72,7 +110,6 @@ router.get('/edit/:id', ensureAuthenticated, async (req, res) => {
   }
 });
 
-// Admin: Update user details
 // Update user
 router.post('/edit/:id', ensureAuthenticated, async (req, res) => {
   try {
@@ -96,7 +133,7 @@ router.post('/edit/:id', ensureAuthenticated, async (req, res) => {
 });
 
 // Admin: Delete user
-router.delete('/delete/:id', ensureAuthenticated, async (req, res) => {
+router.post('/delete/:id', ensureAuthenticated, async (req, res) => {
     try {
         const response = await fetch(`http://localhost:3000/admin/users/${req.params.id}`, {
             method: 'DELETE',

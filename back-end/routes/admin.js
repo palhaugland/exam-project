@@ -1,3 +1,5 @@
+const { Op } = require('sequelize');
+const bcrypt = require('bcrypt');
 const express = require('express');
 const { authenticateToken, authorizeAdmin } = require('../middleware/auth');
 const { Product, Category, Brand, Order, OrderItem, User } = require('../models');
@@ -31,6 +33,49 @@ router.get('/users/:id', authenticateToken, authorizeAdmin, async (req, res) => 
     }
 }
 );
+
+// Create a new user
+router.post('/users', authenticateToken, authorizeAdmin, async (req, res) => {
+    const { firstname, lastname, username, email, password, address, phone, roleId } = req.body;
+
+    try {
+        if (!firstname || !lastname || !username || !email || !password || !address || !phone || !roleId) {
+            return res.status(400).json({ success: false, error: 'All fields are required.' });
+        }
+
+        // Check if the username or email already exists
+        const existingUser = await User.findOne({
+            where: { [Op.or]: [{ username }, { email }] },
+        });
+
+        if (existingUser) {
+            return res.status(400).json({
+                success: false,
+                error: `Username "${username}" or Email "${email}" is already taken.`,
+            });
+        }
+
+        // Hash password
+        const hashedPassword = await bcrypt.hash(password, 10);
+
+        // Create the new user
+        const newUser = await User.create({
+            firstname,
+            lastname,
+            username,
+            email,
+            password: hashedPassword,
+            address,
+            phone,
+            roleId, 
+        });
+
+        return res.status(201).json({ success: true, message: 'User created successfully.', user: newUser });
+    } catch (error) {
+        console.error('Error creating user:', error);
+        return res.status(500).json({ success: false, error: error.message });
+    }
+});
 
 // Update a user
 router.put('/users/:id', authenticateToken, authorizeAdmin, async (req, res) => {

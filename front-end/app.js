@@ -37,6 +37,15 @@ app.use(session({
   cookie: { secure: false } 
 }));
 
+// Flash messages middleware
+app.use((req, res, next) => {
+  res.locals.successMessage = req.session.successMessage;
+  res.locals.errorMessage = req.session.errorMessage;
+  delete req.session.successMessage;
+  delete req.session.errorMessage;
+  next();
+});
+
 // Ensure Admin is available in all views
 app.use((req, res, next) => {
   console.log("Session Role at Middleware:", req.session?.role); 
