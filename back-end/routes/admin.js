@@ -36,14 +36,18 @@ router.get('/users/:id', authenticateToken, authorizeAdmin, async (req, res) => 
 router.put('/users/:id', authenticateToken, authorizeAdmin, async (req, res) => {
     try {
         const { id } = req.params;
-        const { email, password, role } = req.body;
+        const { firstname, lastname, email, role } = req.body;
+
         const user = await User.findByPk(id);
         if (!user) {
             return res.status(404).json({ success: false, error: 'User not found.' });
         }
+
+        user.firstname = firstname;
+        user.lastname = lastname;
         user.email = email;
-        user.password = password;
-        user.role = role;
+        user.roleId = role;
+
         await user.save();
         res.status(200).json({ success: true, user });
     } catch (error) {
@@ -56,17 +60,17 @@ router.put('/users/:id', authenticateToken, authorizeAdmin, async (req, res) => 
 router.delete('/users/:id', authenticateToken, authorizeAdmin, async (req, res) => {
     try {
         const { id } = req.params;
+
         const user = await User.findByPk(id);
         if (!user) {
             return res.status(404).json({ success: false, error: 'User not found.' });
         }
 
-        user.active = false;
-        await user.save();
+        await user.destroy(); // Permanently delete user
 
-        res.status(200).json({ success: true, message: 'User deactivated.' });
+        res.status(200).json({ success: true, message: 'User deleted.' });
     } catch (error) {
-        console.error('Error deactivating user:', error);
+        console.error('Error deleting user:', error);
         res.status(500).json({ success: false, error: 'Failed to delete user.' });
     }
 });

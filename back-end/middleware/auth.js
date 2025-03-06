@@ -7,7 +7,7 @@ const authenticateToken = (req, res, next) => {
         return res.status(401).json({ success: false, error: 'Access denied. No token provided.' });
     }
 
-    const token = authHeader.split(' ')[1]; // Extract token after 'Bearer'
+    const token = authHeader.split(' ')[1]; 
     console.log('Received Token:', token);
 
     if (!token) {
@@ -23,9 +23,8 @@ const authenticateToken = (req, res, next) => {
 
         req.user = user;
 
-        // Ensure `req.session` exists before setting `role`
         if (!req.session) {
-            req.session = {}; // Initialize session if undefined
+            req.session = {}; 
         }
 
         // Assign role properly
