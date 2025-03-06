@@ -30,11 +30,19 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 // Session middleware
 app.use(session({
-  secret: process.env.SESSION_SECRET,
+  secret: process.env.SESSION_SECRET || 'secret token',
   resave: false,
   saveUninitialized: true,
-  cookie: { secure: false },
+  cookie: { secure: false } 
 }));
+
+// Ensure Admin is available in all views
+app.use((req, res, next) => {
+  console.log("Session Role at Middleware:", req.session?.role); 
+  res.locals.isAdmin = req.session?.role === 'admin';
+  next();
+});
+
 
 app.use('/', indexRouter);
 app.use('/users', usersRouter);

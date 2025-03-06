@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Order Details</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+</head>
+<body>
+    <%- include('../partials/navbar') %>
+    <div class="container mt-4">
+        <h1>Order Details</h1>
+        <p>Order Number: <%= order.orderNumber %></p>
+        <p>Status: <%= order.status %></p>
+        <h3>Order items</h3>
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th>Product</th>
+                    <th>Quantity</th>
+                    <th>Price</th>
+                </tr>
+            </thead>
+            <tbody>
+                <% order.items.forEach(item => { %>
+                    <tr>
+                        <td><%= item.product.name %></td>
+                        <td><%= item.quantity %></td>
+                        <td><%= item.price %></td>
+                    </tr>
+                <% }) %>
+            </tbody>
+        </table>
+        <a href="/orders" class="btn btn-secondary">Back to orders</a>
+    </div>
+</body>
+</html>

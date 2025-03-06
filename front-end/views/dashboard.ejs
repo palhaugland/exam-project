@@ -51,7 +51,7 @@
       try {
         const [productsRes, ordersRes, usersRes] = await Promise.all([
           fetch('/admin/products'),
-          fetch('/admin/orders'),
+          fetch('/orders'),
           fetch('/admin/users'),
         ]);
 

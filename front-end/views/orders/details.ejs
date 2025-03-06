@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Order Details</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/stylesheets/style.css">
+</head>
+<body>
+    <% include('../partials/navbar') %>
+    <div class="container mt-4">
+        <h1>Order Details</h1>
+        <p>Order Number: <%= order.orderNumber %></p>
+        <p>Status: <%= order.status %></p>
+        <h3>Order items</h3>
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th>Product</th>
+                    <th>Quantity</th>
+                    <th>Price</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tbody>
+                    <% if (order && order.OrderItems && order.OrderItems.length > 0) { %>
+                        <% order.OrderItems.forEach(item => { %> 
+                            <tr>
+                                <td><%= item.Product.name %></td> 
+                                <td><%= item.quantity %></td>
+                            </tr>
+                        <% }); %>
+                    <% } else { %>
+                        <tr>
+                            <td colspan="3">No items found for this order.</td>
+                        </tr>
+                    <% } %>
+                </tbody>
+            </tbody>
+        </table>
+        <a href="<%= isAdmin ? '/orders/admin' : '/orders' %>" class="btn btn-secondary">Back to orders</a>
+    
+</body>
+</html>

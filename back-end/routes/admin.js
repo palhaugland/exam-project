@@ -1,6 +1,6 @@
 const express = require('express');
 const { authenticateToken, authorizeAdmin } = require('../middleware/auth');
-const { Product, Category, Brand, Order } = require('../models');
+const { Product, Category, Brand, Order, OrderItem } = require('../models');
 const router = express.Router();
 
 // Products 
@@ -205,9 +205,42 @@ router.get('/orders', authenticateToken, authorizeAdmin, async (req, res) => {
                 },
             ],
         });
+
+        if (!orders) {
+            return res.status(404).json({ success: false, error: 'No orders found.' });
+        }
+
+        console.log('Fetched Order Data: ', JSON.stringify(orders, null, 2));
+
         return res.status(200).json({ success: true, orders });
     } catch (error) {
         console.error('Error fetching orders:', error);
+        return res.status(500).json({ success: false, error: error.message });
+    }
+});
+
+// Get details of a specific order
+router.get('/orders/:id', authenticateToken, authorizeAdmin, async (req, res) => {
+    try {
+        const { id } = req.params;
+
+        const order = await Order.findOne({
+            where: { id },
+            include: [
+                {
+                    model: OrderItem,
+                    include: [Product],
+                },
+            ],
+        });
+
+        if (!order) {
+            return res.status(404).json({ success: false, error: 'Order not found.' });
+        }
+
+        return res.status(200).json({ success: true, order });
+    } catch (error) {
+        console.error('Error fetching order:', error);
         return res.status(500).json({ success: false, error: error.message });
     }
 });
@@ -239,6 +272,7 @@ router.put('/orders/:id', authenticateToken, authorizeAdmin, async (req, res) =>
     }
 });
 
+// Admin: Cancel order
 router.put('/orders/:id/cancel', authenticateToken, authorizeAdmin, async (req, res) => {
     try {
         const { id } = req.params;

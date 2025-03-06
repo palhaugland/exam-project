@@ -35,15 +35,20 @@ router.post('/login', async (req, res) => {
                 username: user.username,
                 roleId: user.roleId,
             },
-            JWT_SECRET,
-            { expiresIn: '2h' } // Token expires in 2 hours
+            process.env.JWT_SECRET,
+            { expiresIn: '2h' } 
         );
 
-        // Return success response with token
+        // Return success response with token and user details
         return res.status(200).json({
             success: true,
             message: 'Login successful.',
             token,
+            user: {
+                id: user.id,
+                username: user.username,
+                roleId: user.roleId,
+            },
         });
     } catch (error) {
         console.error('Error during login:', error);

@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Orders Management</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/stylesheets/style.css">
+</head>
+<body>
+    <%- include('../partials/navbar') %>
+    <div class="container mt-4">
+        <h1>Orders Management</h1>
+        <table class="table table-bordered">
+            <thread>
+                <tr>
+                    <th>Order ID</th>
+                    <th>Order Number</th>
+                    <th>User ID</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                </tr>
+            </thread>
+            <tbody>
+                <% orders.forEach(order => { %>
+                    <tr>
+                        <td><%= order.id %></td>
+                        <td><%= order.orderNumber %></td>
+                        <td><%= order.user_id %></td>
+                        <td><%= order.status %></td>
+                        <td>
+                            <a href="<%= isAdmin ? '/orders/admin/view/' + order.id : '/orders/view/' + order.id %>" class="btn btn-primary">View</a>
+                            <% if (typeof isAdmin !== 'undefined' && isAdmin && order.status !== 'Cancelled') { %>
+                            <form action="/orders/cancel/<%= order.id %>" method="POST" style="display: inline;">
+                                <button type="submit" class="btn btn-danger" onclick="return confirm('Are you sure you want to cancel the order?')">Cancel</button>
+                            </form>
+                            <% } %>
+                        </td>
+                    </tr>
+                <% }) %>
+            </tbody>
+        </table>
+        <a href="/dashboard" class="btn btn-secondary">Back to Dashboard</a>
+    </div>
+</body>
+</html>

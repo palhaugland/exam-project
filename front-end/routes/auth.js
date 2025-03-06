@@ -7,28 +7,39 @@ router.get('/login', (req, res) => {
     res.render('login');
 });
 
-// Render login POST request
+const API_BASE_URL = process.env.API_BASE_URL;
+if (!API_BASE_URL) {
+    console.error("API_BASE_URL is not defined in .env!");
+}
+
+
 router.post('/login', async (req, res) => {
-    const username = req.body.username;
-    const password = req.body.password;
     try {
-        const response = await fetch('http://localhost:3000/auth/login', {
+        const response = await fetch(`${API_BASE_URL}/auth/login`, {
             method: 'POST',
-            headers: {'Content-Type': 'application/json'},
-            body: JSON.stringify({ username, password }),
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(req.body),
         });
 
         const data = await response.json();
-        if (response.ok) {
-            console.log('JWT token:', data.token);
+
+        console.log("API Response:", data); // Debugging API response
+
+        // Check if data.user exists before accessing roleId
+        if (response.ok && data.user && data.user.roleId) {
             req.session.token = data.token;
-            res.redirect('/dashboard');
+            req.session.role = data.user.roleId === 1 ? 'admin' : 'user';
+            req.session.userId = data.user.id;
+            req.session.save(() => {
+                res.redirect('/dashboard');
+            });
         } else {
-            res.render('login', { error: data.error || 'Login failed' });
+            console.error("Login API Response Missing User Data:", data);
+            res.render('login', { error: 'Invalid username or password' });
         }
     } catch (error) {
-        console.error('Login failed', error);
-        res.render ( 'login', { error: 'Login failed. Invalid username or password.' });    
+        console.error('Login failed:', error);
+        res.render('login', { error: 'Login failed. Try again.' });
     }
 });
 

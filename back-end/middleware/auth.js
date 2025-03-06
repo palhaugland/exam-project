@@ -1,28 +1,48 @@
 const jwt = require('jsonwebtoken');
 
-// Middleware to verify JWT token
 const authenticateToken = (req, res, next) => {
     const authHeader = req.headers['authorization'];
-    const token = authHeader && authHeader.split(' ')[1]; 
+    if (!authHeader) {
+        console.error('No Authorization header found.');
+        return res.status(401).json({ success: false, error: 'Access denied. No token provided.' });
+    }
+
+    const token = authHeader.split(' ')[1]; // Extract token after 'Bearer'
+    console.log('Received Token:', token);
 
     if (!token) {
-        return res.status(401).json({ success: false, error: 'Access denied. No token provided.' });
+        console.error('Token missing from Authorization header.');
+        return res.status(401).json({ success: false, error: 'Token missing.' });
     }
 
     try {
         const JWT_SECRET = process.env.JWT_SECRET || 'your_jwt_secret_key';
-        const user = jwt.verify(token, JWT_SECRET); 
-        req.user = user; 
-        next(); 
+        const user = jwt.verify(token, JWT_SECRET);
+
+        console.log('Decoded Token User:', user);
+
+        req.user = user;
+
+        // Ensure `req.session` exists before setting `role`
+        if (!req.session) {
+            req.session = {}; // Initialize session if undefined
+        }
+
+        // Assign role properly
+        req.session.role = user.roleId === 1 ? 'admin' : 'user';
+        console.log('Session Role:', req.session.role);
+
+        next();
     } catch (error) {
+        console.error('JWT Verification Failed:', error.message);
         return res.status(403).json({ success: false, error: 'Invalid or expired token.' });
     }
 };
 
 // Middleware to check for admin role
 const authorizeAdmin = (req, res, next) => {
-    if (req.user.roleId !== 1) { 
-        console.log('Unauthorized access. User roleId:', req.user.roleId);
+    if (!req.user || req.user.roleId !== 1) {
+        console.log('Unauthorized access. User roleId:', req.user ? req.user.roleId : 'undefined');
         return res.status(403).json({ success: false, error: 'Access denied. Admins only.' });
     }
     next();

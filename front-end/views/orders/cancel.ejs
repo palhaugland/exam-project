@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Order Cancelled</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/stylesheets/style.css">
+</head>
+<body>
+    <%- include('../partials/navbar') %>
+    <div class="container mt-4">
+        <h1>Order Cancelled</h1>
+        <p>Order Number <%= orderNumber %> has been successfully cancelled</p>
+        <a href="/orders/admin" class="btn btn-secondary">Back to orders</a>
+    </div>
+</body>
+</html>

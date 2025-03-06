@@ -2,6 +2,7 @@ const express = require('express');
 const { authenticateToken } = require('../middleware/auth');
 const { Cart, CartItem, Product, Order, OrderItem } = require('../models');
 const { updateUserMembership } = require('../utils/membership');
+const crypto = require('crypto');
 const router = express.Router();
 
 // Add a product to the cart
@@ -106,10 +107,15 @@ router.post('/checkout/now', authenticateToken, async (req, res) => {
             return res.status(400).json({ success: false, error: 'Cart is empty.' });
         }
 
+        //Generate a 8-character order number
+        const orderNumber = crypto.randomBytes(4).toString('hex');
+
         // Create an order
         const order = await Order.create({
             userId: req.user.id,
             status: 'In Progress',
+            orderNumber: orderNumber,
+            membershipStatus: req.user.membershipStatus
         });
 
         let unavailableItems = [];
