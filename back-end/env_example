@@ -1,0 +1,7 @@
+DB_NAME = "database_name"
+DB_USER = "database_user"
+DB_PASSWORD = "database_password"
+DB_HOST = "localhost"
+DB_DIALECT = "mysql"
+PORT = "3000"
+JWT_SECRET = "jwt_secret"

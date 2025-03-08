@@ -22,3 +22,7 @@ If you are unsure of any instructions for the course assignment, contact out to 
 **REMEMBER** Your Moodle LMS submission must have your repository link **AND** your Github username in the text file.
 
 ---
+
+** TO START BACK END, FIRST CREATE A DATABASE NAMED "ecommerce_db". Then run "node scripts/sync.js" to sync database tables and fetch data from API.**
+
+1. Before starting the app, install dependecies with running the script "npm install 
