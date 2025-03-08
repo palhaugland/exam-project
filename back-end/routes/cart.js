@@ -148,8 +148,8 @@ router.post('/checkout/now', authenticateToken, async (req, res) => {
             where: { cartId: cart.id, productId: processedItems }
         });
 
-        // Update membership status after checkout
-        await updateUserMembership(req.user.id);
+        // Update membership status and refresh user session
+        await updateUserMembership(req.user.id, req);
 
         return res.status(200).json({
             success: true,

@@ -44,8 +44,8 @@ Product.belongsTo(Brand, { foreignKey: "brandId" });
 User.hasOne(Cart, { foreignKey: "userId" });
 Cart.belongsTo(User, { foreignKey: "userId" });
 
-User.belongsToMany(Membership, { through: UserMembership, foreignKey: "userId", as: "Membership" });
-Membership.belongsToMany(User, { through: UserMembership, foreignKey: "membershipId", as: "User" });
+User.belongsToMany(Membership, { through: UserMembership, foreignKey: "userId", as: "memberships" }); 
+Membership.belongsToMany(User, { through: UserMembership, foreignKey: "membershipId", as: "users" });
 
 Cart.hasMany(CartItem, { foreignKey: "cartId" });
 CartItem.belongsTo(Cart, { foreignKey: "cartId" });

@@ -11,14 +11,10 @@ router.get('/users', authenticateToken, authorizeAdmin, async (req, res) => {
     try {
         const users = await User.findAll({
             attributes: { exclude: ['password'] },
-            include: [
-                {
-                    model: Membership,
-                    as: 'Membership',
-                    attributes: ['name']
-                }
-            ]
+            include: [{ model: Membership, as: 'memberships' }]
         });
+
+        console.log("Fetched Users:", JSON.stringify(users, null, 2));
 
         res.status(200).json({ success: true, users });
     } catch (error) {
