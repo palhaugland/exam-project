@@ -62,8 +62,32 @@ router.get('/', ensureAuthenticated, async (req, res) => {
 });
 
 // Add Product (Form)
-router.get('/add', ensureAuthenticated, (req, res) => {
-    res.render('products/add');
+router.get('/add', ensureAuthenticated, async (req, res) => {
+    try {
+        // Fetch categories from the backend
+        const categoriesResponse = await fetch('http://localhost:3000/admin/categories', {
+            headers: {
+                'Authorization': `Bearer ${req.session.token}`
+            }
+        });
+        const categoriesData = await categoriesResponse.json();
+        const categories = categoriesData.categories; // Access the categories array
+
+        // Fetch brands from the backend
+        const brandsResponse = await fetch('http://localhost:3000/admin/brands', {
+            headers: {
+                'Authorization': `Bearer ${req.session.token}`
+            }
+        });
+        const brandsData = await brandsResponse.json();
+        const brands = brandsData.brands; // Access the brands array
+
+        // Render the add product form with categories and brands data
+        res.render('products/add', { categories, brands });
+    } catch (error) {
+        console.error('Error fetching categories or brands:', error);
+        res.redirect('/products');
+    }
 });
 
 // Add Product (POST)

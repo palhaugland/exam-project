@@ -23,8 +23,8 @@ router.post('/login', async (req, res) => {
 
         const data = await response.json();
 
-        console.log("API Response:", data); // Debugging API response
-
+        console.log("API Response:", data); 
+        
         // Check if data.user exists before accessing roleId
         if (response.ok && data.user && data.user.roleId) {
             req.session.token = data.token;
