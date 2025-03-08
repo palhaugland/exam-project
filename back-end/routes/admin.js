@@ -2,21 +2,30 @@ const { Op } = require('sequelize');
 const bcrypt = require('bcrypt');
 const express = require('express');
 const { authenticateToken, authorizeAdmin } = require('../middleware/auth');
-const { Product, Category, Brand, Order, OrderItem, User } = require('../models');
+const { Product, Category, Brand, Order, OrderItem, User, Membership } = require('../models');
 const router = express.Router();
 
 // Users Management
 // Fetch all users
 router.get('/users', authenticateToken, authorizeAdmin, async (req, res) => {
     try {
-        const users = await User.findAll({attributes: {exclude: ['password']}});
+        const users = await User.findAll({
+            attributes: { exclude: ['password'] },
+            include: [
+                {
+                    model: Membership,
+                    as: 'Membership',
+                    attributes: ['name']
+                }
+            ]
+        });
+
         res.status(200).json({ success: true, users });
     } catch (error) {
         console.error('Error fetching users:', error);
         res.status(500).json({ success: false, error: 'Failed to fetch users.' });
     }
-}
-);
+});
 
 // Fetch a specific user
 router.get('/users/:id', authenticateToken, authorizeAdmin, async (req, res) => {

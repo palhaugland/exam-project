@@ -17,6 +17,7 @@
                     <th>Username</th>
                     <th>Email</th>
                     <th>Role</th>
+                    <th>Membership</th>
                     <th>Actions</th>
                 </tr>
             </thead>
@@ -27,6 +28,7 @@
                         <td><%= user.username %></td>
                         <td><%= user.email %></td>
                         <td><%= user.roleId === 1 ? 'Admin' : 'User' %></td>
+                        <td><%= user.Membership ? user.Membership.name : 'None'  %></td>
                         <td>
                             <a href="/users/edit/<%= user.id %>" class="btn btn-primary btn-sm">Edit</a>
                             <form action="/users/delete/<%= user.id %>" method="POST" style="display:inline;">

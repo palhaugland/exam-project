@@ -10,8 +10,8 @@ module.exports = {
   },
   test: {
     dialect: "sqlite",
-    storage: ":memory:", // In-memory SQLite database for Jest
-    logging: false, // Disable logging in tests
+    storage: ":memory:", 
+    logging: false, 
   },
   production: {
     username: process.env.DB_USER,

@@ -16,18 +16,20 @@ const cartModel = require("./Cart");
 const cartItemModel = require("./CartItem");
 const orderModel = require("./Order");
 const orderItemModel = require("./OrderItem");
+const userMembershipModel = require("./UserMembership");
 
 // Initialize models
 const User = userModel(sequelize);
 const Role = roleModel(sequelize);
-const Product = productModel(sequelize);
 const Category = categoryModel(sequelize);
+const Product = productModel(sequelize);
 const Brand = brandModel(sequelize);
 const Membership = membershipModel(sequelize);
 const Cart = cartModel(sequelize);
 const CartItem = cartItemModel(sequelize);
 const Order = orderModel(sequelize);
 const OrderItem = orderItemModel(sequelize);
+const UserMembership = userMembershipModel(sequelize);
 
 // Define relationships
 Role.hasMany(User, { foreignKey: "roleId" });
@@ -41,6 +43,9 @@ Product.belongsTo(Brand, { foreignKey: "brandId" });
 
 User.hasOne(Cart, { foreignKey: "userId" });
 Cart.belongsTo(User, { foreignKey: "userId" });
+
+User.belongsToMany(Membership, { through: UserMembership, foreignKey: "userId", as: "Membership" });
+Membership.belongsToMany(User, { through: UserMembership, foreignKey: "membershipId", as: "User" });
 
 Cart.hasMany(CartItem, { foreignKey: "cartId" });
 CartItem.belongsTo(Cart, { foreignKey: "cartId" });
@@ -71,4 +76,5 @@ module.exports = {
     CartItem,
     Order,
     OrderItem,
+    UserMembership,
 };
