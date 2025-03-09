@@ -23,6 +23,12 @@ If you are unsure of any instructions for the course assignment, contact out to 
 
 ---
 
-** TO START BACK END, FIRST CREATE A DATABASE NAMED "ecommerce_db". Then run "node scripts/sync.js" to sync database tables and fetch data from API.**
+** TO START FRONT-END, FIRST FOLLOW THE STEPS TO START BACK-END.**
 
-1. Before starting the app, install dependecies with running the script "npm install 
+1. Before starting the app, install dependecies with running the script 
+"npm install bootstrap cookie-parser debug dotenv ejs express express-session http-errors morgan node-fetch"
+
+2. Ready to run!
+Run "npm start"
+
+

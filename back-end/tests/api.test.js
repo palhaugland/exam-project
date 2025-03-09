@@ -32,7 +32,7 @@ beforeAll(async () => {
     userToken = adminLogin.body.token;
     expect(userToken).toBeDefined();
 
-    console.log("✅ Admin authenticated");
+    console.log("Admin authenticated");
 
     // 🔹 Get a test category, brand, and product
     const categoryRes = await request(app)
@@ -79,7 +79,7 @@ describe("API Tests", () => {
     expect(res.body.success).toBe(true);
     expect(res.body.product.name).toBe("TEST_PRODUCT");
 
-    testProduct = res.body.product; // ✅ Store product for later tests
+    testProduct = res.body.product; 
   });
 
   test("GET /admin/products - Retrieve product", async () => {

@@ -27,3 +27,14 @@ If you are unsure of any instructions for the course assignment, contact out to 
 **REMEMBER** Your Moodle LMS submission must have your repository link **AND** your Github username in the text file.
 
 ---
+
+
+*TO SET UP THE APP, VIEW THE README.MD IN BACK-END FIRST, THEN IN FRONT-END*
+
+
+**REFERENCES**
+I have recieved help from ChatGPT in making this project (as mentioned in the reflection report). 
+The code to make memberships follow purchases made by the user was made with a lot of help from AI. 
+Also setting up the database from back-end/utils/databaseInit.js, was made with help from AI. I wrote the code, but AI helped with the structure and debugging when I got stuck.
+
+I got AI help for testing as well. I struggled and had to find the way. It wasn't straight forward, but together with AI I managed to finish it.
